@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
         top: 20,
         flexDirection: 'row', 
         alignItems: 'center',
+        justifyContent: 'space-between',
         width: 250,
         margin: 20,
     },
@@ -53,7 +54,6 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderRadius: 10,
         paddingHorizontal: 10,
-        marginRight: 10,
     },
     btnContainer: {
         width: 50,
@@ -63,5 +63,6 @@ const styles = StyleSheet.create({
         borderColor: '#000',
         borderWidth: 1,
         borderRadius: 25,
+        marginLeft: 10,
     },
 });
