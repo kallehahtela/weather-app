@@ -35,7 +35,7 @@
       ]
     ],
     "extra": {
-      "APIKEY": "2ec51f2bd9e6c5d163c60df013384013"
+      "APIKEY": "YOUR_OPEN_WEATHER_API_KEY"
     }
   }
 }
