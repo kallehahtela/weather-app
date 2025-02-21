@@ -33,6 +33,9 @@
           "locationAlwaysWhenInUsePermission": "Allow weather app to use your location."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "APIKEY": "2ec51f2bd9e6c5d163c60df013384013"
+    }
   }
 }
