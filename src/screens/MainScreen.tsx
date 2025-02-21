@@ -4,58 +4,23 @@ import {
     StyleSheet, 
     TouchableWithoutFeedback, 
     Keyboard,
-    Text,
     ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import Constants from 'expo-constants'
-
-// Location
 import * as Location from 'expo-location';
 
-// Custom Files
+// Custom Components
 import Search from "../components/Search";
-
-type LocationData = {
-    name: string;
-};
-
-const openWaetherConfig = {
-    // API key cannot be empty
-    // That's why we use ! operator on extra
-    apiKey: Constants.expoConfig?.extra!.APIKEY,
-};
+import CurrentWeather from "../components/CurrentWeather";
+import ReverseCoding from "../components/ReverseCoding";
 
 const MainScreen = () => {
-    const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [locationName, setLocationName] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-
-    const reverseGeocoding = async (lat: number, lon: number) => {
-        try {
-            const response = await fetch(
-                `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${openWaetherConfig.apiKey}`
-            );
-            const json: LocationData[] = await response.json();
-
-            if (json.length > 0) {
-                // Extracts the city name
-                setLocationName(json[0].name);
-            } else {
-                setLocationName('Unknown location');
-            }
-        } catch (error) {
-            console.log('Error fetching location:', error);
-            setLocationName('Error fetching location')
-        } finally {
-            setLoading(false);
-        }
-    };
+    const [location, setLocation] = useState<Location.LocationObject | null>(null);
 
     useEffect(() => {
-        async function getCurrentLocation() {
+        const getCurrentLocation = async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
@@ -63,45 +28,40 @@ const MainScreen = () => {
                 return;
             }
 
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
-            
-            // Call reverse geocoding once location is obtained
-            if (location && location.coords) {
-                reverseGeocoding(
-                    location.coords.latitude, 
-                    location.coords.longitude
-                );
-            }
-        }
+            let loc = await Location.getCurrentPositionAsync({});
+            setLocation(loc);
+            setLoading(false);
+        };
 
         getCurrentLocation();
     }, []);
 
-    let text = 'Waiting...';
-    if (errorMsg) {
-        text = errorMsg;
-    } else if (location) {
-        text = JSON.stringify(location);
-    }
-
     return (
-        <TouchableWithoutFeedback
-            onPress={Keyboard.dismiss}
+        <TouchableWithoutFeedback 
+            onPress={Keyboard.dismiss} 
             accessible={false}
         >
             <SafeAreaView style={styles.container}>
                 <View style={styles.innerContainer}>
                     <Search />
-                        
+                    
                     {loading ? (
-                        <ActivityIndicator />
+                        <ActivityIndicator size="large" />
                     ) : (
-                        <Text style={styles.paragraph}>
-                            {
-                            errorMsg ? errorMsg : `${locationName}`
-                            }
-                        </Text>
+                        <>
+                            <ReverseCoding 
+                                lat={location?.coords.latitude} 
+                                lon={location?.coords.longitude} 
+                            />
+                            <View style={styles.currWeatherCard}>
+                                {location?.coords && (
+                                    <CurrentWeather 
+                                        lat={location.coords.latitude}
+                                        lon={location.coords.longitude}
+                                    />
+                                )}
+                            </View>
+                        </>
                     )}
                 </View>
             </SafeAreaView>
@@ -114,6 +74,7 @@ export default MainScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        position: 'relative',
     },
     innerContainer: {
         flex: 1,
@@ -121,8 +82,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 20,
     },
-    paragraph: {
-        fontSize: 18,
-        textAlign: 'center',
+    currWeatherCard: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 20,
+        padding: 20,
+        borderColor: '#000',
+        borderWidth: 1,
+        borderRadius: 15,
+        height: 200,
     }
 });
