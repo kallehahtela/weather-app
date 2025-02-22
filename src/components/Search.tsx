@@ -8,6 +8,7 @@ import {
 
 // Icons
 import { Feather } from '@expo/vector-icons';
+import colors from "../constants/colors";
 
 const Search = () => {
     const [visible, setVisible] = useState(false);
@@ -18,6 +19,7 @@ const Search = () => {
                 <TextInput 
                     style={styles.input}
                     placeholder="Search here..."
+                    placeholderTextColor={colors.white}
                 />
             )}
 
@@ -28,7 +30,7 @@ const Search = () => {
                 <Feather 
                     name='search'
                     size={24}
-                    color={'#000'}
+                    color={colors.white}
                 />
             </TouchableOpacity>
         </View>
@@ -39,19 +41,16 @@ export default Search;
 
 const styles = StyleSheet.create({
     container: {
-        position: 'absolute',
-        top: 20,
         flexDirection: 'row', 
         alignItems: 'center',
-        justifyContent: 'space-between',
-        width: 250,
-        margin: 20,
+        justifyContent: 'flex-end',
+        width: '80%',
     },
     input :{
         flex: 1,
         height: 40,
-        borderWidth: 1,
-        borderColor: '#000',
+        borderWidth: 2,
+        borderColor: colors.white,
         borderRadius: 10,
         paddingHorizontal: 10,
     },
@@ -60,8 +59,8 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: '#000',
-        borderWidth: 1,
+        borderColor: colors.white,
+        borderWidth: 2,
         borderRadius: 25,
         marginLeft: 10,
     },

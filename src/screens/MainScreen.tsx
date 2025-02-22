@@ -5,6 +5,7 @@ import {
     TouchableWithoutFeedback, 
     Keyboard,
     ActivityIndicator,
+    ViewBase,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from 'expo-location';
@@ -13,6 +14,8 @@ import * as Location from 'expo-location';
 import Search from "../components/Search";
 import CurrentWeather from "../components/CurrentWeather";
 import ReverseCoding from "../components/ReverseCoding";
+import colors from "../constants/colors";
+import HourlyForecast from "../components/HourlyForecast";
 
 const MainScreen = () => {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -42,18 +45,22 @@ const MainScreen = () => {
             accessible={false}
         >
             <SafeAreaView style={styles.container}>
-                <View style={styles.innerContainer}>
-                    <Search />
+                    <View style={styles.searchContainer}>
+                        <Search />
+                    </View>
                     
                     {loading ? (
                         <ActivityIndicator size="large" />
                     ) : (
                         <>
-                            <ReverseCoding 
-                                lat={location?.coords.latitude} 
-                                lon={location?.coords.longitude} 
-                            />
-                            <View style={styles.currWeatherCard}>
+                            <View>
+                                <ReverseCoding 
+                                    lat={location?.coords.latitude} 
+                                    lon={location?.coords.longitude} 
+                                />
+                            </View>
+
+                            <View style={styles.currWeatherContainer}>
                                 {location?.coords && (
                                     <CurrentWeather 
                                         lat={location.coords.latitude}
@@ -61,9 +68,17 @@ const MainScreen = () => {
                                     />
                                 )}
                             </View>
+
+                            <View style={styles.forecastContainer}>
+                                {location?.coords && (
+                                    <HourlyForecast 
+                                        lat={location.coords.latitude}
+                                        lon={location.coords.longitude}
+                                    />
+                                )}
+                            </View>
                         </>
                     )}
-                </View>
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );
@@ -74,22 +89,20 @@ export default MainScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        position: 'relative',
+        backgroundColor: colors.backgroundColor,
     },
-    innerContainer: {
+    searchContainer: {
+        height: 150,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    currWeatherContainer: {
+        height: 300,
+         marginHorizontal: 10,
+    },
+    forecastContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 20,
+        minHeight: 250,
+        paddingBottom: 10,
     },
-    currWeatherCard: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 20,
-        padding: 20,
-        borderColor: '#000',
-        borderWidth: 1,
-        borderRadius: 15,
-        height: 200,
-    }
 });

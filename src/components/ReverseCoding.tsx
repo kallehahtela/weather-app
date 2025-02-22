@@ -6,8 +6,10 @@ import {
     Text
 } from "react-native";
 
-// Custom Files
+// Custom Files & Icons
 import { openWaetherConfig } from "../store/OpenWeatherConfig";
+import colors from "../constants/colors";
+import { EvilIcons } from '@expo/vector-icons';
 
 type ReverseCodingProps = {
     lat?: number | null;
@@ -45,13 +47,20 @@ const ReverseCoding: React.FC<ReverseCodingProps> = ({ lat, lon }) => {
     }, [lat, lon]);
 
     return (
-        <View style={styles.innerContainer}>                
+        <View style={styles.container}>                
             {loading ? (
                 <ActivityIndicator />
             ) : (
-                <Text style={styles.paragraph}>
-                    {errorMsg ? errorMsg : locationName}
-                </Text>
+                <View style={styles.locationContainer}>
+                    <EvilIcons 
+                        name="location"
+                        size={34}
+                        color={colors.white}
+                    />
+                    <Text style={styles.paragraph}>
+                        {errorMsg ? errorMsg : locationName}
+                    </Text>
+                </View>
             )}
         </View>
     );
@@ -60,13 +69,25 @@ const ReverseCoding: React.FC<ReverseCodingProps> = ({ lat, lon }) => {
 export default ReverseCoding;
 
 const styles = StyleSheet.create({
-    innerContainer: {
+    container: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    locationContainer: {
+        width: '70%',
+        height: 60,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 5,
+        marginRight: 50,
+        marginTop: 50,
     },
     paragraph: {
         fontSize: 26,
         fontWeight: '600',
         textAlign: 'center',
+        color: colors.white
     },
 });
