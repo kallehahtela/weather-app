@@ -7,12 +7,8 @@ import {
 } from 'react-native';
 
 // Custom Files
-import { openWaetherConfig } from '../store/OpenWeatherConfig';
-
-type WeatherProps = {
-    lat: number | null;
-    lon: number | null;
-};
+import { openWaetherConfig, WeatherProps } from '../store/OpenWeatherConfig';
+import colors from "../constants/colors";
  
 const CurrentWeather: React.FC<WeatherProps> = ({ lat, lon }) => {
     const [weather, setWeather] = useState<any>(null);
@@ -20,21 +16,29 @@ const CurrentWeather: React.FC<WeatherProps> = ({ lat, lon }) => {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!lat || !lon) return;
+        if (!lat || !lon) {
+            setWeather(null);
+            setErrorMsg("No location data");
+            return;
+        }
 
         const fetchCurrentWeather = async () => {
             setLoading(true);
+            setWeather(null);
+            setErrorMsg(null);
+
             try {
                 const response = await fetch(
                     `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${openWaetherConfig.apiKey}`
                 );
                 const data = await response.json();
 
-                if (response.ok) {
-                    setWeather(data);
-                } else {
-                    setErrorMsg('Error fetching weather');
+                if (!response.ok) {
+                    setErrorMsg(data.message || 'Error fetching weather');
+                    return;
                 }
+
+                setWeather(data);
             } catch (error) {
                 setErrorMsg('Failed to load weather');
             } finally {
@@ -45,17 +49,28 @@ const CurrentWeather: React.FC<WeatherProps> = ({ lat, lon }) => {
         fetchCurrentWeather();
     }, [lat, lon]);
 
-    if (loading) return <ActivityIndicator />;
-    if (errorMsg) return <Text style={styles.error}>{errorMsg}</Text>;
+    if (loading) {
+        return (
+            <View>
+                <ActivityIndicator size="large" color={colors.white} />
+            </View>
+        );
+    }
+
+    if (errorMsg) return <Text>{errorMsg}</Text>;
 
     return (
         <View style={styles.container}>
-            <Text style={styles.temp}>
-                {weather?.main?.temp}°C
-            </Text>
-            <Text style={styles.desc}>
-                {weather?.weather[0]?.description}
-            </Text>
+            <View style={styles.temp}>
+                <Text style={styles.tempValue}>{Math.ceil(weather?.main?.temp)}</Text>
+                <Text style={styles.degree}>°C</Text>
+            </View>
+
+            <View style={styles.descContainer}>
+                <Text style={styles.desc}>
+                    {weather?.weather?.[0]?.description || "No description"}
+                </Text>
+            </View>
         </View>
     );
 };
@@ -64,20 +79,37 @@ export default CurrentWeather;
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: "center",
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginHorizontal: 20,
         marginTop: 20,
+        height: 300
     },
     temp: {
-        fontSize: 40,
-        fontWeight: "bold",
-        marginVertical: 5,
+        flexDirection: 'row',
+        alignSelf: 'center',
+    },
+    tempValue: {
+        fontSize: 98,
+        fontWeight: 'bold',
+        color: colors.white,
+    },
+    degree: {
+        fontSize: 24,
+        fontWeight: '500',
+        color: colors.white,
+        marginTop: 20,
+    },
+    descContainer: {
+        transform: [{ rotate: '-90deg' }], // Rotates the text
+        textAlign: 'center',
+        justifyContent: 'center',
     },
     desc: {
-        fontSize: 18,
-        fontStyle: "italic",
-    },
-    error: {
-        fontSize: 18,
-        color: "red",
+        fontSize: 17,
+        color: colors.white,
+        textAlign: 'center',
     },
 });
