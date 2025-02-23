@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 
 // Custom Files
-import { openWaetherConfig, WeatherProps } from '../store/OpenWeatherConfig';
+import { openWeatherConfig, WeatherProps } from '../store/OpenWeatherConfig';
 import colors from "../constants/colors";
  
 const CurrentWeather: React.FC<WeatherProps> = ({ lat, lon }) => {
@@ -29,7 +29,7 @@ const CurrentWeather: React.FC<WeatherProps> = ({ lat, lon }) => {
 
             try {
                 const response = await fetch(
-                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${openWaetherConfig.apiKey}`
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${openWeatherConfig.apiKey}`
                 );
                 const data = await response.json();
 
@@ -79,33 +79,31 @@ export default CurrentWeather;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexDirection: 'row',
+        height: 200,
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginHorizontal: 20,
-        marginTop: 20,
-        height: 300
+        marginTop: 50,
     },
     temp: {
         flexDirection: 'row',
         alignSelf: 'center',
     },
     tempValue: {
-        fontSize: 98,
+        fontSize: 110,
         fontWeight: 'bold',
         color: colors.white,
     },
     degree: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: '500',
         color: colors.white,
-        marginTop: 20,
+        marginTop: 23,
     },
     descContainer: {
-        transform: [{ rotate: '-90deg' }], // Rotates the text
-        textAlign: 'center',
+        alignItems: 'center',
         justifyContent: 'center',
+        paddingHorizontal: 20,
     },
     desc: {
         fontSize: 17,

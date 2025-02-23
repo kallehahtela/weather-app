@@ -5,7 +5,6 @@ import {
     TouchableWithoutFeedback, 
     Keyboard,
     ActivityIndicator,
-    ViewBase,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from 'expo-location';
@@ -21,21 +20,29 @@ const MainScreen = () => {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    
+    const getCurrentLocation = async () => {
+        setLoading(true);
+        setErrorMsg(null);
 
-    useEffect(() => {
-        const getCurrentLocation = async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                setLoading(false);
-                return;
-            }
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            setLoading(false);
+            return;
+        }
 
+        try {
             let loc = await Location.getCurrentPositionAsync({});
             setLocation(loc);
+        } catch (error) {
+            setErrorMsg('Error retrieving location');
+        } finally {
             setLoading(false);
-        };
+        }
+    };
 
+    useEffect(() => {
         getCurrentLocation();
     }, []);
 
@@ -45,40 +52,41 @@ const MainScreen = () => {
             accessible={false}
         >
             <SafeAreaView style={styles.container}>
-                    <View style={styles.searchContainer}>
-                        <Search />
-                    </View>
-                    
-                    {loading ? (
-                        <ActivityIndicator size="large" />
-                    ) : (
-                        <>
-                            <View>
-                                <ReverseCoding 
-                                    lat={location?.coords.latitude} 
-                                    lon={location?.coords.longitude} 
+                <View style={styles.searchContainer}>
+                    <Search />
+                </View>
+                
+                {loading ? (
+                    <ActivityIndicator size="large" />
+                ) : (
+                    <>
+                        <View>
+                            <ReverseCoding 
+                                lat={location?.coords.latitude} 
+                                lon={location?.coords.longitude} 
+                            />
+                        </View>
+
+                        <View style={styles.currWeatherContainer}>
+                            {location?.coords && (
+                                <CurrentWeather 
+                                    lat={location.coords.latitude}
+                                    lon={location.coords.longitude}
                                 />
-                            </View>
+                            )}
+                        </View>
 
-                            <View style={styles.currWeatherContainer}>
-                                {location?.coords && (
-                                    <CurrentWeather 
-                                        lat={location.coords.latitude}
-                                        lon={location.coords.longitude}
-                                    />
-                                )}
-                            </View>
-
-                            <View style={styles.forecastContainer}>
-                                {location?.coords && (
-                                    <HourlyForecast 
-                                        lat={location.coords.latitude}
-                                        lon={location.coords.longitude}
-                                    />
-                                )}
-                            </View>
-                        </>
-                    )}
+                        <View>
+                            {location?.coords && (
+                                <HourlyForecast 
+                                    lat={location.coords.latitude}
+                                    lon={location.coords.longitude}
+                                />
+                            )}
+                            
+                        </View>
+                    </>
+                )}
             </SafeAreaView>
         </TouchableWithoutFeedback>
     );
@@ -99,10 +107,5 @@ const styles = StyleSheet.create({
     currWeatherContainer: {
         height: 300,
          marginHorizontal: 10,
-    },
-    forecastContainer: {
-        flex: 1,
-        minHeight: 250,
-        paddingBottom: 10,
     },
 });

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 // Custom Files
-import { openWaetherConfig, WeatherProps } from "../store/OpenWeatherConfig";
+import { openWeatherConfig, WeatherProps } from "../store/OpenWeatherConfig";
 import colors from "../constants/colors";
 
 const HourlyForecast: React.FC<WeatherProps> = ({ lat, lon }) => {
@@ -32,7 +32,7 @@ const HourlyForecast: React.FC<WeatherProps> = ({ lat, lon }) => {
 
             try {
                 const response = await fetch(
-                    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${openWaetherConfig.apiKey}&units=metric`
+                    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${openWeatherConfig.apiKey}&units=metric`
                 );
 
                 const data = await response.json();
@@ -66,14 +66,17 @@ const HourlyForecast: React.FC<WeatherProps> = ({ lat, lon }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>
-                Hourly Forecast
+                3-Hourly Forecast
             </Text>
 
             <FlatList 
-                data={weather.list.slice(0, 6)} // Get next 6 hours
+                data={weather.list.slice(0, 6)}
                 horizontal
-                scrollEnabled={true}
+                showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.dt.toString()}
+                snapToAlignment="start"
+                decelerationRate="fast"
+                snapToInterval={80}
                 renderItem={({ item }) => {
                     const time = new Date(item.dt * 1000).toLocaleTimeString([], {
                         hour: '2-digit',
@@ -96,7 +99,6 @@ const HourlyForecast: React.FC<WeatherProps> = ({ lat, lon }) => {
                     );
                 }}
             />
-
         </View>
     );
 };
@@ -112,6 +114,14 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         borderRadius: 10,
     },
+    forecastItem: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 15,
+        marginHorizontal: 8,
+        backgroundColor: "rgba(255,255,255,0.2)",
+        borderRadius: 12,
+    },
     header: {
         fontSize: 18,
         fontWeight: "bold",
@@ -119,13 +129,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginLeft: 18,
     },
-    forecastItem: {
-        alignItems: "center",
-        justifyContent: 'center',
-        padding: 10,
-        marginHorizontal: 5,
-        backgroundColor: "rgba(255,255,255,0.2)",
-        borderRadius: 10,
+    icon: {
+        width: 70,
+        height: 70,
+        marginBottom: 5,
     },
     time: {
         fontSize: 14,
@@ -135,9 +142,5 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         color: colors.backgroundColor,
-    },
-    icon: {
-        width: 50,
-        height: 50,
     },
 });
