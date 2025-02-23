@@ -10,7 +10,7 @@ export type WeatherProps = {
     lon: number | null;
 };
 
-export const openWaetherConfig = {
+export const openWeatherConfig = {
     // API key cannot be empty
     // That's why we use ! operator on extra
     apiKey: Constants.expoConfig?.extra!.APIKEY,

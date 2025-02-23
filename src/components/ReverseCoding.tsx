@@ -7,7 +7,7 @@ import {
 } from "react-native";
 
 // Custom Files & Icons
-import { openWaetherConfig } from "../store/OpenWeatherConfig";
+import { openWeatherConfig } from "../store/OpenWeatherConfig";
 import colors from "../constants/colors";
 import { EvilIcons } from '@expo/vector-icons';
 
@@ -22,28 +22,33 @@ const ReverseCoding: React.FC<ReverseCodingProps> = ({ lat, lon }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let isMounted = true;
         if (!lat || !lon) return;
 
         const reverseGeocoding = async () => {
             try {
                 const response = await fetch(
-                    `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${openWaetherConfig.apiKey}`
+                    `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${openWeatherConfig.apiKey}`
                 );
                 const json = await response.json();
-
-                if (json.length > 0) {
-                    setLocationName(json[0].name);
-                } else {
-                    setLocationName('Unknown location');
+                if (isMounted) {
+                    setLocationName(
+                        json.length > 0 ? json[0].name : 
+                        'Unknown location'
+                    );
                 }
             } catch (error) {
-                setErrorMsg('Error fetching location');
+                if (isMounted) setErrorMsg('Error fetching location')
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false)
             }
         };
 
         reverseGeocoding();
+
+        return () => {
+            isMounted = false;
+        };
     }, [lat, lon]);
 
     return (
