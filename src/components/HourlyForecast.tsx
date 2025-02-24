@@ -4,7 +4,6 @@ import {
     StyleSheet,
     ActivityIndicator,
     Text,
-    FlatList,
     Image,
     ScrollView,
 } from 'react-native';
@@ -12,6 +11,7 @@ import {
 // Custom Files
 import { openWeatherConfig, WeatherProps } from "../store/OpenWeatherConfig";
 import colors from "../constants/colors";
+import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 
 const HourlyForecast: React.FC<WeatherProps> = ({ lat, lon }) => {
     const [weather, setWeather] = useState<any>(null);
@@ -64,42 +64,46 @@ const HourlyForecast: React.FC<WeatherProps> = ({ lat, lon }) => {
     if (errorMsg) return <Text>{errorMsg}</Text>;
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>
-                3-Hourly Forecast
-            </Text>
+        <GestureHandlerRootView style={{ flex: 1}}>
+            <View style={styles.container}>
+                <Text style={styles.header}>
+                    3-Hourly Forecast
+                </Text>
 
-            <FlatList 
-                data={weather.list.slice(0, 6)}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item.dt.toString()}
-                snapToAlignment="start"
-                decelerationRate="fast"
-                snapToInterval={80}
-                renderItem={({ item }) => {
-                    const time = new Date(item.dt * 1000).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                    });
-
-                    return (
-                        <View style={styles.forecastItem}>
-                            <Text style={styles.time}>{time}</Text>
-                            <Image 
-                                source={{
-                                    uri: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`
-                                }}
-                                style={styles.icon}
-                            />
-                            <Text style={styles.temp}>
-                                {Math.round(item.main.temp)}°C
-                            </Text>
-                        </View>
-                    );
-                }}
-            />
-        </View>
+                <FlatList 
+                        data={weather.list.slice(0, 6) || []}
+                        horizontal={true}
+                        nestedScrollEnabled={true}
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item) => item.dt.toString()}
+                        snapToAlignment="start"
+                        decelerationRate="fast"
+                        snapToInterval={100}
+                        contentContainerStyle={{ paddingHorizontal: 10 }}
+                        renderItem={({ item }) => {
+                            const time = new Date(item.dt * 1000).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            });
+        
+                            return (
+                                <View style={styles.forecastItem}>
+                                    <Text style={styles.time}>{time}</Text>
+                                    <Image 
+                                        source={{
+                                            uri: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`
+                                        }}
+                                        style={styles.icon}
+                                    />
+                                    <Text style={styles.temp}>
+                                        {Math.round(item.main.temp)}°C
+                                    </Text>
+                                </View>
+                            );
+                        }}
+                    />
+            </View>
+        </GestureHandlerRootView>
     );
 };
 
