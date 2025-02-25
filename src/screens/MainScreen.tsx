@@ -76,7 +76,7 @@ const MainScreen = () => {
                             )}
                         </View>
 
-                        <View>
+                        <View style={styles.forecastContainer}>
                             {location?.coords && (
                                 <HourlyForecast 
                                     lat={location.coords.latitude}
@@ -106,6 +106,9 @@ const styles = StyleSheet.create({
     },
     currWeatherContainer: {
         height: 300,
-         marginHorizontal: 10,
+        marginHorizontal: 10,
+    },
+    forecastContainer: {
+        marginTop: 80,
     },
 });
