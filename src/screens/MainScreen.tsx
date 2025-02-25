@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
         height: 150,
         alignItems: 'center',
         justifyContent: 'center',
+        zIndex: 3,
     },
     currWeatherContainer: {
         height: 300,
