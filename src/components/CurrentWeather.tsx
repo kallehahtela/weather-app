@@ -60,16 +60,27 @@ const CurrentWeather: React.FC<WeatherProps> = ({ lat, lon }) => {
     if (errorMsg) return <Text>{errorMsg}</Text>;
 
     return (
-        <View style={styles.container}>
-            <View style={styles.temp}>
-                <Text style={styles.tempValue}>{Math.ceil(weather?.main?.temp)}</Text>
-                <Text style={styles.degree}>°C</Text>
+        <View style={styles.outerContainer}>
+            {/* Temperature and short text for curr weather */}
+            <View style={styles.innerContainer}>
+                <View style={styles.temp}>
+                    <Text style={styles.tempValue}>{Math.round(weather?.main?.temp)}</Text>
+                    <Text style={styles.degree}>°C</Text>
+                </View>
+
+                <View style={styles.descContainer}>
+                    <Text style={styles.desc}>
+                        {weather?.weather?.[0]?.description || "No description"}
+                    </Text>
+                </View>
             </View>
 
-            <View style={styles.descContainer}>
-                <Text style={styles.desc}>
-                    {weather?.weather?.[0]?.description || "No description"}
-                </Text>
+            {/* Other Details */}
+            <View style={styles.detailContainer}>
+                <Text style={styles.detailText}>Feels like: {Math.round(weather?.main?.feels_like)}°C</Text>
+                <Text style={styles.detailText}>Humidity: {weather?.main?.humidity} %</Text>
+                <Text style={styles.detailText}>Wind Speed: {weather?.wind?.speed} m/s</Text>
+                <Text style={styles.detailText}>Sea Level: {weather.main.sea_level} m</Text>
             </View>
         </View>
     );
@@ -78,7 +89,11 @@ const CurrentWeather: React.FC<WeatherProps> = ({ lat, lon }) => {
 export default CurrentWeather;
 
 const styles = StyleSheet.create({
-    container: {
+    outerContainer: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    innerContainer: {
         flexDirection: 'row',
         height: 200,
         justifyContent: 'space-between',
@@ -106,8 +121,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     desc: {
-        fontSize: 17,
+        fontSize: 18,
         color: colors.white,
         textAlign: 'center',
+    },
+    detailContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        marginHorizontal: 15,
+    },
+    detailText: {
+        color: colors.white,
+        fontSize: 18,
+        marginBottom: 4,
     },
 });
